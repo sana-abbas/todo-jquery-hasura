@@ -6,7 +6,7 @@ const postData = {
 query: `
 query getTodos {
 todos {
-id
+
 title
 completed
 }
@@ -23,7 +23,13 @@ dataType: 'json',
 success: (response) => {
 	const todos = response.data.todos;
 	console.log(todos);
-$('#todo-list').html(JSON.stringify(todos));
+  let todosHTML = ""
+  for (todo of todos) {
+    todosHTML += `<li id="list-todo" data-id="${todo.id}">${todo.title}</li>`;
+  }
+$('#todo-list').html(`<ul>
+  ${todosHTML}
+  </ul>`);
 },
 error: (error) => {
 console.log(error);
@@ -38,7 +44,8 @@ $( document ).ready(function() {
 
   getTodos();
 
-  $('#submit').click(function(){
+  $('#submit').click(function(e){
+    e.preventDefault();
     let newData = {
 	query: `
 	mutation insert_todos($newTodo:String!) {
@@ -69,13 +76,55 @@ $( document ).ready(function() {
   	contentType: 'application/json',
     dataType: 'json',
 	success: (response) => {
-	const todos = response.data.todos;
-	console.log(todos);
-	$('#todo-list').html(JSON.stringify(todos));
-	},
+	//const todos = response.data.todos;
+	//console.log(todos);
+  getTodos();
+},
 	error: (error) => {
 	console.log(error);
 	}
+  })
+})
+
+  $('#list-todo').click(function(){
+    //e.preventDefault();
+    let updateData = {
+  query: `
+  mutation update_todos($newTodo:String!) {
+    update_todos(
+    objects: [
+      {
+        id: $updateTodo,
+        completed: true
+      }
+    ]
+    ) {
+    returning {
+      id
+      title
+      completed
+      }
+    }
+  }
+  `,
+  variables: {
+    updateTodo : $('#this').data('id')
+  }
+}
+  $.ajax({
+    type: "POST",
+    url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    data: JSON.stringify(newData),
+    contentType: 'application/json',
+    dataType: 'json',
+  success: (response) => {
+  //const todos = response.data.todos;
+  //console.log(todos);
+  console.log(response);
+},
+  error: (error) => {
+  console.log(error);
+  }
   })
 })
 });
