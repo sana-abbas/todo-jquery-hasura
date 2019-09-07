@@ -87,9 +87,7 @@ $( document ).ready(function() {
 })
 
   myFunction = function(){
-    var list= $('.list-todo').data('id');
-    $(this).css('text-decoration' , 'line-through');
-    let updateData = {
+  let updateData = {
   query: `
   mutation update_todos($id: uuid) {
   update_todos(
@@ -119,10 +117,8 @@ $( document ).ready(function() {
   success: (response) => {
    var list= $('.list-todo').data('id');
    console.log(list);
-   
-  //const todos = response.data.todos;
-  //console.log(todos);
-  console.log(response);
+   console.log(response);
+   getTodos();
 },
   error: (error) => {
   console.log(error);
