@@ -5,3 +5,9 @@
 .todo-body {
   color: gray
 }
+.list-todo{
+	cursor: pointer;
+}
+.list-todo:hover{
+	text-decoration: underline;
+}

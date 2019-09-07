@@ -6,7 +6,7 @@ const postData = {
 query: `
 query getTodos {
 todos {
-
+id
 title
 completed
 }
@@ -25,7 +25,7 @@ success: (response) => {
 	console.log(todos);
   let todosHTML = ""
   for (todo of todos) {
-    todosHTML += `<li id="list-todo" data-id="${todo.id}">${todo.title}</li>`;
+    todosHTML += `<li class="list-todo" onclick="myFunction()" data-id="${todo.id}">${todo.title}</li>`;
   }
 $('#todo-list').html(`<ul>
   ${todosHTML}
@@ -86,38 +86,40 @@ $( document ).ready(function() {
   })
 })
 
-  $('#list-todo').click(function(){
-    //e.preventDefault();
+  myFunction = function(){
+    var list= $('.list-todo').data('id');
+    $(this).css('text-decoration' , 'line-through');
     let updateData = {
   query: `
-  mutation update_todos($newTodo:String!) {
-    update_todos(
-    objects: [
-      {
-        id: $updateTodo,
-        completed: true
-      }
-    ]
-    ) {
+  mutation update_todos($id: uuid) {
+  update_todos(
+    where: {id: {_eq:$id }},
+    _set: {
+      completed: true
+    }
+  ) {
+    affected_rows
     returning {
       id
       title
-      completed
-      }
     }
   }
+}
   `,
   variables: {
-    updateTodo : $('#this').data('id')
+    id : $('.list-todo').data('id')
   }
 }
   $.ajax({
     type: "POST",
     url: 'https://leadwithher.herokuapp.com/v1/graphql',
-    data: JSON.stringify(newData),
+    data: JSON.stringify(updateData),
     contentType: 'application/json',
     dataType: 'json',
   success: (response) => {
+   var list= $('.list-todo').data('id');
+   console.log(list);
+   
   //const todos = response.data.todos;
   //console.log(todos);
   console.log(response);
@@ -126,5 +128,5 @@ $( document ).ready(function() {
   console.log(error);
   }
   })
-})
+}
 });
