@@ -25,7 +25,7 @@ success: (response) => {
 	console.log(todos);
   let todosHTML = ""
   for (todo of todos) {
-    todosHTML += `<li class="list-todo" onclick="myFunction()" data-id="${todo.id}">${todo.title}</li>`;
+    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}">${todo.title}</li>`;
   }
 $('#todo-list').html(`<ul>
   ${todosHTML}
@@ -76,8 +76,6 @@ $( document ).ready(function() {
   	contentType: 'application/json',
     dataType: 'json',
 	success: (response) => {
-	//const todos = response.data.todos;
-	//console.log(todos);
   getTodos();
 },
 	error: (error) => {
@@ -86,7 +84,12 @@ $( document ).ready(function() {
   })
 })
 
-  myFunction = function(){
+
+
+
+  myFunction = function(element){
+   var list = $(element).attr('data-id');
+   console.log(list);
   let updateData = {
   query: `
   mutation update_todos($id: uuid) {
@@ -105,7 +108,7 @@ $( document ).ready(function() {
 }
   `,
   variables: {
-    id : $('.list-todo').data('id')
+    id : list
   }
 }
   $.ajax({
@@ -115,10 +118,8 @@ $( document ).ready(function() {
     contentType: 'application/json',
     dataType: 'json',
   success: (response) => {
-   var list= $('.list-todo').data('id');
-   console.log(list);
    console.log(response);
-   getTodos();
+    $(element).addClass('strike');
 },
   error: (error) => {
   console.log(error);
