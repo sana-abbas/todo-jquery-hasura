@@ -89,7 +89,7 @@ $( document ).ready(function() {
 
   myFunction = function(element){
    var list = $(element).attr('data-id');
-   console.log(list);
+   //console.log(list);
   let updateData = {
   query: `
   mutation update_todos($id: uuid) {
