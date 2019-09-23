@@ -7,10 +7,18 @@
 }
 #list-todo{
 	cursor: pointer;
+	list-style: none;
+	line-height: 30px;
+}
+.list-todo.checked{
+	text-decoration: line-through;
 }
 #list-todo:hover{
 	text-decoration: underline;
 }
 .strike{
 	text-decoration: line-through;
+}
+.fas{
+	cursor: pointer;
 }

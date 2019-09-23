@@ -25,7 +25,7 @@ success: (response) => {
 	console.log(todos);
   let todosHTML = ""
   for (todo of todos) {
-    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}">${todo.title}</li>`;
+    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li><span onclick="deleteFunction(this)" data-id="${todo.id}"><i class="fas fa-trash-alt"></i></span>`;
   }
 $('#todo-list').html(`<ul>
   ${todosHTML}
@@ -76,6 +76,7 @@ $( document ).ready(function() {
   	contentType: 'application/json',
     dataType: 'json',
 	success: (response) => {
+    $('#newTodo').val("");
   getTodos();
 },
 	error: (error) => {
@@ -89,7 +90,9 @@ $( document ).ready(function() {
 
   myFunction = function(element){
    var list = $(element).attr('data-id');
-   //console.log(list);
+   
+  
+   
   let updateData = {
   query: `
   mutation update_todos($id: uuid) {
@@ -101,7 +104,7 @@ $( document ).ready(function() {
   ) {
     affected_rows
     returning {
-      id
+      completed
       title
     }
   }
@@ -118,12 +121,46 @@ $( document ).ready(function() {
     contentType: 'application/json',
     dataType: 'json',
   success: (response) => {
-   console.log(response);
-    $(element).addClass('strike');
+  $(element).toggleClass('strike');
+},
+  error: (error) => {
+  console.log(error);
+  }
+  })
+  //getTodos();
+}
+
+deleteFunction = function(element){
+   var list = $(element).attr('data-id');
+   
+  let deleteData = {
+  query: `
+  mutation delete_todos($id: uuid) {
+  delete_todos(
+    where: {id: {_eq:$id }},
+  ) {
+    affected_rows
+  }
+}
+  `,
+  variables: {
+    id : list
+  }
+}
+$.ajax({
+    type: "POST",
+    url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    data: JSON.stringify(deleteData),
+    contentType: 'application/json',
+    dataType: 'json',
+  success: (response) => {
+  getTodos();
+  
 },
   error: (error) => {
   console.log(error);
   }
   })
 }
+
 });
