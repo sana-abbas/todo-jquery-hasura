@@ -13,10 +13,11 @@ completed
 }
 `
 };
-
+var user_name = $('#user_name').val();
 $.ajax({
 type: 'POST',
 url: hasuraUrl,
+headers: {'X-Hasura-User-Name': 'user_name'},
 data: JSON.stringify(postData),
 contentType: 'application/json',
 dataType: 'json',
@@ -25,7 +26,7 @@ success: (response) => {
 	console.log(todos);
   let todosHTML = ""
   for (todo of todos) {
-    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li><span onclick="deleteFunction(this)" data-id="${todo.id}"><i class="fas fa-trash-alt"></i></span>`;
+    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li><input type="button" onclick="deleteFunction(this)" data-id="${todo.id}" value="Delete">`;
   }
 $('#todo-list').html(`<ul>
   ${todosHTML}
@@ -42,7 +43,10 @@ $( document ).ready(function() {
   console.log( "jQuery and the document is ready!" );
   $('#title').html('This was from JavaScript')
 
+  $('#user').click(function(e){
+   e.preventDefault(); 
   getTodos();
+  })
 
   $('#submit').click(function(e){
     e.preventDefault();
@@ -85,21 +89,62 @@ $( document ).ready(function() {
   })
 })
 
-
-
-
   myFunction = function(element){
    var list = $(element).attr('data-id');
-   
-  
    
   let updateData = {
   query: `
   mutation update_todos($id: uuid) {
   update_todos(
-    where: {id: {_eq:$id }},
+    where: {
+    id: {_eq:$id }
+    completed: {_eq:false}
+    },
     _set: {
-      completed: true
+      completed: true,
+    }
+  ) {
+    affected_rows
+    returning {
+      completed
+      title
+    }
+  }
+} `,
+  variables: {
+    id : list
+  } 
+}
+
+  $.ajax({
+    type: "POST",
+    url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    data: JSON.stringify(updateData),
+    contentType: 'application/json',
+    dataType: 'json',
+  success: (response) => {
+    console.log(response);
+ $(element).toggleClass('strike');
+},
+  error: (error) => {
+  console.log(error);
+  }
+  })
+  //getTodos();
+}
+
+updateFunction = function(element){
+    var list = $(element).attr('data-id');
+  let update = { 
+query:
+`mutation update_todos($id: uuid) {
+  update_todos(
+    where: {
+        id: {_eq:$id },
+        
+      },
+    _set: {
+      completed: false
     }
   ) {
     affected_rows
@@ -114,20 +159,21 @@ $( document ).ready(function() {
     id : list
   }
 }
-  $.ajax({
+$.ajax({
     type: "POST",
     url: 'https://leadwithher.herokuapp.com/v1/graphql',
-    data: JSON.stringify(updateData),
+    data: JSON.stringify(update),
     contentType: 'application/json',
     dataType: 'json',
   success: (response) => {
-  $(element).toggleClass('strike');
+  console.log(response);
+  $(element).removeClass('strike');
+  
 },
   error: (error) => {
   console.log(error);
   }
   })
-  //getTodos();
 }
 
 deleteFunction = function(element){
