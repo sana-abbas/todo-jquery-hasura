@@ -17,7 +17,7 @@ var user_name = $('#user_name').val();
 $.ajax({
 type: 'POST',
 url: hasuraUrl,
-headers: {'X-Hasura-User-Name': 'user_name'},
+headers: {'x-hasura-user-name': user_name},
 data: JSON.stringify(postData),
 contentType: 'application/json',
 dataType: 'json',
@@ -26,9 +26,13 @@ success: (response) => {
 	console.log(todos);
   let todosHTML = ""
   for (todo of todos) {
-    todosHTML += `<li id="list-todo" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li><input type="button" onclick="deleteFunction(this)" data-id="${todo.id}" value="Delete">`;
+    todosHTML += `<li class="list-group-item list-group-item-primary" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li>
+
+    <p><input type="button" onclick="deleteFunction(this)" class="btn btn-danger btn-small" data-id="${todo.id}" value="Delete"></p>`;
   }
-$('#todo-list').html(`<ul>
+  var user_name = $('#user_name').val();
+  $('#title').html(user_name + ", you have these items in your list! ");
+$('#todo-list').html(`<ul class="list-group">
   ${todosHTML}
   </ul>`);
 },
@@ -41,9 +45,8 @@ console.log(error);
 
 $( document ).ready(function() {
   console.log( "jQuery and the document is ready!" );
-  $('#title').html('This was from JavaScript')
 
-  $('#user').click(function(e){
+  $('.user').click(function(e){
    e.preventDefault(); 
   getTodos();
   })
@@ -56,6 +59,7 @@ $( document ).ready(function() {
   	insert_todos(
     objects: [
       {
+        user_name: $userName,
         title: $newTodo,
         completed: false
       }
@@ -70,13 +74,15 @@ $( document ).ready(function() {
 	}
 	`,
 	variables: {
-		newTodo : $('#newTodo').val()
+		newTodo : $('#newTodo').val(),
+    userName: $('#user_name').val(),
 	}
 }
   $.ajax({
   	type: "POST",
   	url: 'https://leadwithher.herokuapp.com/v1/graphql',
   	data: JSON.stringify(newData),
+    headers: {'x-hasura-user-name': user_name},
   	contentType: 'application/json',
     dataType: 'json',
 	success: (response) => {
