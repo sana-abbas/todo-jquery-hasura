@@ -1,16 +1,22 @@
 .todo-heading {
   color: darkslategrey
 }
-
+.jumbotron{
+	text-align: center;
+}
 .todo-body {
   color: gray
+}
+#title{
+	text-align: center;
+	text-transform: capitalize;
 }
 #todo-list{
 	margin: 0 auto;
 	width: 20%;
 	text-align: center;
 }
-#list-todo{
+li{
 	cursor: pointer;
 	list-style: none;
 	line-height: 30px;
@@ -18,9 +24,6 @@
 }
 .list-todo.checked{
 	text-decoration: line-through;
-}
-#list-todo:hover{
-	text-decoration: underline;
 }
 .strike{
 	text-decoration: line-through;

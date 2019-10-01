@@ -27,14 +27,15 @@ success: (response) => {
   let todosHTML = ""
   for (todo of todos) {
     todosHTML += `<li class="list-group-item list-group-item-primary" onclick="myFunction(this)" data-id="${todo.id}"> ${todo.title} </li>
-
+    <br>
     <p><input type="button" onclick="deleteFunction(this)" class="btn btn-danger btn-small" data-id="${todo.id}" value="Delete"></p>`;
   }
   var user_name = $('#user_name').val();
-  $('#title').html(user_name + ", you have these items in your list! ");
-$('#todo-list').html(`<ul class="list-group">
+  
+$('#title').html("<p class='alert alert-success custom'>" + user_name + ", you have these items in your list!</p><br><br>");
+$('#todo-list').html(`<div class="alert alert-secondary"><ul class="list-group">
   ${todosHTML}
-  </ul>`);
+  </ul></div>`);
 },
 error: (error) => {
 console.log(error);
@@ -51,7 +52,7 @@ $( document ).ready(function() {
   getTodos();
   })
 
-  $('#submit').click(function(e){
+  $('.submit').click(function(e){
     e.preventDefault();
     let newData = {
 	query: `
@@ -59,7 +60,6 @@ $( document ).ready(function() {
   	insert_todos(
     objects: [
       {
-        user_name: $userName,
         title: $newTodo,
         completed: false
       }
@@ -75,9 +75,9 @@ $( document ).ready(function() {
 	`,
 	variables: {
 		newTodo : $('#newTodo').val(),
-    userName: $('#user_name').val(),
 	}
 }
+var user_name = $('#user_name').val();
   $.ajax({
   	type: "POST",
   	url: 'https://leadwithher.herokuapp.com/v1/graphql',
@@ -104,7 +104,6 @@ $( document ).ready(function() {
   update_todos(
     where: {
     id: {_eq:$id }
-    completed: {_eq:false}
     },
     _set: {
       completed: true,
@@ -121,10 +120,11 @@ $( document ).ready(function() {
     id : list
   } 
 }
-
+var user_name = $('#user_name').val();
   $.ajax({
     type: "POST",
     url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    headers: {'x-hasura-user-name': user_name},
     data: JSON.stringify(updateData),
     contentType: 'application/json',
     dataType: 'json',
@@ -165,9 +165,11 @@ query:
     id : list
   }
 }
+var user_name = $('#user_name').val();
 $.ajax({
     type: "POST",
     url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    headers: {'x-hasura-user-name': user_name},
     data: JSON.stringify(update),
     contentType: 'application/json',
     dataType: 'json',
@@ -199,9 +201,11 @@ deleteFunction = function(element){
     id : list
   }
 }
+var user_name = $('#user_name').val();
 $.ajax({
     type: "POST",
     url: 'https://leadwithher.herokuapp.com/v1/graphql',
+    headers: {'x-hasura-user-name': user_name},
     data: JSON.stringify(deleteData),
     contentType: 'application/json',
     dataType: 'json',
