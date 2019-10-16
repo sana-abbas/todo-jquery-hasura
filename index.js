@@ -36,6 +36,7 @@ $('#title').html("<p class='alert alert-success custom'>" + user_name + ", you h
 $('#todo-list').html(`<div class="alert alert-secondary"><ul class="list-group">
   ${todosHTML}
   </ul></div>`);
+$('li').toggleClass('strike');
 },
 error: (error) => {
 console.log(error);
@@ -50,6 +51,7 @@ $( document ).ready(function() {
   $('.user').click(function(e){
    e.preventDefault(); 
   getTodos();
+
   })
 
   $('.submit').click(function(e){
@@ -130,7 +132,7 @@ var user_name = $('#user_name').val();
     dataType: 'json',
   success: (response) => {
     console.log(response);
- $(element).toggleClass('strike');
+    $(element).toggleClass('strike');
 },
   error: (error) => {
   console.log(error);
